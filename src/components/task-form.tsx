@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -41,6 +42,15 @@ const TaskForm = ({
   onCancel,
   isLoading,
 }: TaskFormProps) => {
+  const [defaultDate, setDefaultDate] = useState('');
+
+  useEffect(() => {
+    // Set default date on client side only
+    if (!initialData?.dueDate) {
+      setDefaultDate(new Date().toISOString().split('T')[0]);
+    }
+  }, [initialData?.dueDate]);
+
   const {
     register,
     handleSubmit,
@@ -58,10 +68,17 @@ const TaskForm = ({
       tags: initialData?.tags || [],
       dueDate: initialData?.dueDate
         ? new Date(initialData.dueDate).toISOString().split('T')[0]
-        : new Date().toISOString().split('T')[0],
+        : '',
       estimatedTime: initialData?.estimatedTime || undefined,
     },
   });
+
+  // Update due date when default date is set
+  useEffect(() => {
+    if (defaultDate && !initialData?.dueDate) {
+      setValue('dueDate', defaultDate);
+    }
+  }, [defaultDate, initialData?.dueDate, setValue]);
 
   const watchedPriority = watch('priority');
   const watchedStatus = watch('status');

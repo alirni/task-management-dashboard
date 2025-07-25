@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import DashboardHeader from '@/components/dashboard-header';
 import StatsCards from '@/components/stats-cards';
@@ -20,9 +20,15 @@ export default function Home() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showFilters, setShowFilters] = useState(true);
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
+  const [isMac, setIsMac] = useState(false);
 
   // Ref for search input to focus with keyboard shortcut
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Detect platform on client side only
+  useEffect(() => {
+    setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
+  }, []);
 
   // Confirmation dialog state
   const [confirmationDialog, setConfirmationDialog] = useState<{
@@ -330,11 +336,21 @@ export default function Home() {
     setShowFilters(!showFilters);
   };
 
-  // Keyboard shortcuts setup
-  const isMac =
-    typeof window !== 'undefined' &&
-    navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  // Handle bulk import of tasks
+  const handleImportTasks = async (tasksToImport: TaskFormData[]) => {
+    try {
+      for (const taskData of tasksToImport) {
+        await addTask(taskData);
+      }
+      toast.success(`${tasksToImport.length} tasks imported successfully!`);
+    } catch (error) {
+      toast.error('Failed to import some tasks');
+      console.error('Error importing tasks:', error);
+      throw error; // Re-throw to let the dialog handle the error
+    }
+  };
 
+  // Keyboard shortcuts setup
   const shortcuts = [
     {
       key: 'n',
@@ -407,6 +423,8 @@ export default function Home() {
         onFilter={handleFilter}
         onCreateSampleData={createSampleTasks}
         showSampleData={tasks.length === 0}
+        tasks={tasks}
+        onImportTasks={handleImportTasks}
       />
 
       <main className="container mx-auto px-4 py-6">

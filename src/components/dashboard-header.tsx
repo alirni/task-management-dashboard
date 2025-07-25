@@ -1,12 +1,16 @@
 import { Button } from '@/components/ui/button';
 import { Filter, Plus } from 'lucide-react';
 import KeyboardShortcutsHelp from './keyboard-shortcuts-help';
+import DataExportImportDialog from './data-export-import-dialog';
+import { Task, TaskFormData } from '@/types/task';
 
 interface DashboardHeaderProps {
   onCreateTask: () => void;
   onFilter: () => void;
   onCreateSampleData?: () => void;
   showSampleData?: boolean;
+  tasks: Task[];
+  onImportTasks: (tasks: TaskFormData[]) => Promise<void>;
 }
 
 const DashboardHeader = ({
@@ -14,6 +18,8 @@ const DashboardHeader = ({
   onFilter,
   onCreateSampleData,
   showSampleData = false,
+  tasks,
+  onImportTasks,
 }: DashboardHeaderProps) => {
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -38,6 +44,10 @@ const DashboardHeader = ({
             <Button variant="outline" size="sm" onClick={onFilter}>
               <Filter className="h-4 w-4" />
             </Button>
+            <DataExportImportDialog
+              tasks={tasks}
+              onImportTasks={onImportTasks}
+            />
             <KeyboardShortcutsHelp />
             <Button onClick={onCreateTask}>
               <Plus className="h-4 w-4 mr-2" />

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -14,10 +15,12 @@ interface KeyboardShortcutsHelpProps {
 }
 
 const KeyboardShortcutsHelp = ({ children }: KeyboardShortcutsHelpProps) => {
-  // Detect if user is on Mac
-  const isMac =
-    typeof window !== 'undefined' &&
-    navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    // Only run on client side
+    setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
+  }, []);
 
   const modifierKey = isMac ? 'Cmd' : 'Ctrl';
 
