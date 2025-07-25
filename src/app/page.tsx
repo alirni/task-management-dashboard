@@ -10,6 +10,7 @@ import BulkActionsToolbar from '@/components/bulk-actions-toolbar';
 import CreateTaskDialog from '@/components/create-task-dialog';
 import EditTaskDialog from '@/components/edit-task-dialog';
 import ConfirmationDialog from '@/components/confirmation-dialog';
+import { HydrationSafe } from '@/components/hydration-safe';
 import { Task, TaskFormData } from '@/types/task';
 import { useTaskContext } from '@/contexts/TaskContext';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -433,87 +434,89 @@ export default function Home() {
   useKeyboardShortcuts({ shortcuts });
 
   return (
-    <div className="min-h-screen bg-background">
-      <DashboardHeader
-        onCreateTask={() => setIsCreateDialogOpen(true)}
-        onFilter={handleFilter}
-        onCreateSampleData={createSampleTasks}
-        showSampleData={tasks.length === 0}
-        tasks={tasks}
-        onImportTasks={handleImportTasks}
-      />
+    <HydrationSafe fallback={<div className="min-h-screen bg-background" />}>
+      <div className="min-h-screen bg-background">
+        <DashboardHeader
+          onCreateTask={() => setIsCreateDialogOpen(true)}
+          onFilter={handleFilter}
+          onCreateSampleData={createSampleTasks}
+          showSampleData={tasks.length === 0}
+          tasks={tasks}
+          onImportTasks={handleImportTasks}
+        />
 
-      <main className="container mx-auto px-3 py-4 sm:px-4 sm:py-6">
-        <div className="space-y-4 sm:space-y-6">
-          <StatsCards
-            totalTasks={totalTasks}
-            inProgress={inProgress}
-            completed={completed}
-            overdue={overdue}
-          />
-
-          {showFilters && (
-            <TaskFilters
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
-              priorityFilter={priorityFilter}
-              onPriorityFilterChange={setPriorityFilter}
-              categoryFilter={categoryFilter}
-              onCategoryFilterChange={setCategoryFilter}
-              sortBy={sortBy}
-              onSortByChange={setSortBy}
-              onClearFilters={handleClearFilters}
-              searchInputRef={searchInputRef}
+        <main className="container mx-auto px-3 py-4 sm:px-4 sm:py-6">
+          <div className="space-y-4 sm:space-y-6">
+            <StatsCards
+              totalTasks={totalTasks}
+              inProgress={inProgress}
+              completed={completed}
+              overdue={overdue}
             />
-          )}
 
-          <BulkActionsToolbar
-            selectedCount={selectedTaskIds.length}
-            totalCount={filteredTasks.length}
-            onSelectAll={handleSelectAll}
-            onBulkDelete={handleBulkDelete}
-            onBulkStatusChange={handleBulkStatusChange}
-          />
+            {showFilters && (
+              <TaskFilters
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
+                priorityFilter={priorityFilter}
+                onPriorityFilterChange={setPriorityFilter}
+                categoryFilter={categoryFilter}
+                onCategoryFilterChange={setCategoryFilter}
+                sortBy={sortBy}
+                onSortByChange={setSortBy}
+                onClearFilters={handleClearFilters}
+                searchInputRef={searchInputRef}
+              />
+            )}
 
-          <TaskDashboard
-            tasks={filteredTasks}
-            onEditTask={handleEditTask}
-            onDeleteTask={handleDeleteTask}
-            onToggleTaskStatus={handleToggleTaskStatus}
-            onDuplicateTask={handleDuplicateTask}
-            onTaskSelection={handleTaskSelection}
-            selectedTaskIds={selectedTaskIds}
-            isLoading={isLoading}
-          />
-        </div>
-      </main>
+            <BulkActionsToolbar
+              selectedCount={selectedTaskIds.length}
+              totalCount={filteredTasks.length}
+              onSelectAll={handleSelectAll}
+              onBulkDelete={handleBulkDelete}
+              onBulkStatusChange={handleBulkStatusChange}
+            />
 
-      <CreateTaskDialog
-        isOpen={isCreateDialogOpen}
-        onOpenChange={setIsCreateDialogOpen}
-        onCreateTask={handleCreateTask}
-        isLoading={isLoading}
-      />
+            <TaskDashboard
+              tasks={filteredTasks}
+              onEditTask={handleEditTask}
+              onDeleteTask={handleDeleteTask}
+              onToggleTaskStatus={handleToggleTaskStatus}
+              onDuplicateTask={handleDuplicateTask}
+              onTaskSelection={handleTaskSelection}
+              selectedTaskIds={selectedTaskIds}
+              isLoading={isLoading}
+            />
+          </div>
+        </main>
 
-      <EditTaskDialog
-        isOpen={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        task={editingTask}
-        onEditTask={handleUpdateTask}
-        isLoading={isLoading}
-      />
+        <CreateTaskDialog
+          isOpen={isCreateDialogOpen}
+          onOpenChange={setIsCreateDialogOpen}
+          onCreateTask={handleCreateTask}
+          isLoading={isLoading}
+        />
 
-      <ConfirmationDialog
-        isOpen={confirmationDialog.isOpen}
-        onOpenChange={closeConfirmation}
-        title={confirmationDialog.title}
-        description={confirmationDialog.description}
-        confirmText={confirmationDialog.confirmText}
-        variant={confirmationDialog.variant}
-        onConfirm={confirmationDialog.onConfirm}
-      />
-    </div>
+        <EditTaskDialog
+          isOpen={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          task={editingTask}
+          onEditTask={handleUpdateTask}
+          isLoading={isLoading}
+        />
+
+        <ConfirmationDialog
+          isOpen={confirmationDialog.isOpen}
+          onOpenChange={closeConfirmation}
+          title={confirmationDialog.title}
+          description={confirmationDialog.description}
+          confirmText={confirmationDialog.confirmText}
+          variant={confirmationDialog.variant}
+          onConfirm={confirmationDialog.onConfirm}
+        />
+      </div>
+    </HydrationSafe>
   );
 }

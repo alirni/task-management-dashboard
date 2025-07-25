@@ -6,6 +6,7 @@ import React, {
   useReducer,
   useCallback,
   useEffect,
+  useState,
 } from 'react';
 import { Task, TaskFormData } from '@/types/task';
 import { TaskState, initialTaskState } from '@/types/task-actions';
@@ -54,6 +55,9 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({
   children,
   initialTasks = [],
 }) => {
+  // Add hydration safety flag
+  const [isHydrated, setIsHydrated] = useState(false);
+
   const [state, dispatch] = useReducer(taskReducer, {
     ...initialTaskState,
     tasks: initialTasks,
@@ -147,29 +151,33 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({
 
   // Ensure hydration safety
   useEffect(() => {
-    // Load initial tasks from localStorage on client side only
-    const savedTasks = localStorage.getItem('task-management-tasks');
-    if (savedTasks) {
-      try {
-        const parsedTasks = JSON.parse(savedTasks);
-        if (Array.isArray(parsedTasks) && parsedTasks.length > 0) {
-          dispatch({ type: 'SET_TASKS', payload: parsedTasks });
+    setIsHydrated(true);
+
+    // Load initial tasks from localStorage only after hydration
+    if (typeof window !== 'undefined') {
+      const savedTasks = localStorage.getItem('task-management-tasks');
+      if (savedTasks) {
+        try {
+          const parsedTasks = JSON.parse(savedTasks);
+          if (Array.isArray(parsedTasks) && parsedTasks.length > 0) {
+            dispatch({ type: 'SET_TASKS', payload: parsedTasks });
+          }
+        } catch (error) {
+          console.error('Failed to load tasks from localStorage:', error);
         }
-      } catch (error) {
-        console.error('Failed to load tasks from localStorage:', error);
       }
     }
   }, []);
 
-  // Save tasks to localStorage whenever they change
+  // Save tasks to localStorage whenever they change (only after hydration)
   useEffect(() => {
-    if (state.tasks.length > 0) {
+    if (isHydrated && typeof window !== 'undefined' && state.tasks.length > 0) {
       localStorage.setItem(
         'task-management-tasks',
         JSON.stringify(state.tasks)
       );
     }
-  }, [state.tasks]);
+  }, [state.tasks, isHydrated]);
 
   return (
     <TaskContext.Provider value={contextValue}>{children}</TaskContext.Provider>
