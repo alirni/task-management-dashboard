@@ -9,6 +9,7 @@ import TaskFilters from '@/components/task-filters';
 import BulkActionsToolbar from '@/components/bulk-actions-toolbar';
 import CreateTaskDialog from '@/components/create-task-dialog';
 import EditTaskDialog from '@/components/edit-task-dialog';
+import ConfirmationDialog from '@/components/confirmation-dialog';
 import { Task, TaskFormData } from '@/types/task';
 import { useTasks } from '@/hooks/useTasks';
 
@@ -18,6 +19,21 @@ export default function Home() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showFilters, setShowFilters] = useState(true);
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
+
+  // Confirmation dialog state
+  const [confirmationDialog, setConfirmationDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    confirmText?: string;
+    variant?: 'default' | 'destructive';
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    onConfirm: () => {},
+  });
 
   // Filter and Sort State
   const [searchQuery, setSearchQuery] = useState('');
@@ -163,15 +179,24 @@ export default function Home() {
   };
 
   const handleDeleteTask = async (taskId: string) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      try {
-        await deleteTask(taskId);
-        toast.success('Task deleted successfully!');
-      } catch (error) {
-        toast.error('Failed to delete task');
-        console.error('Error deleting task:', error);
-      }
-    }
+    const task = tasks.find(t => t.id === taskId);
+    const taskTitle = task?.title || 'this task';
+
+    showConfirmation(
+      'Delete Task',
+      `Are you sure you want to delete "${taskTitle}"? This action cannot be undone.`,
+      async () => {
+        try {
+          await deleteTask(taskId);
+          toast.success('Task deleted successfully!');
+        } catch (error) {
+          toast.error('Failed to delete task');
+          console.error('Error deleting task:', error);
+        }
+      },
+      'Delete',
+      'destructive'
+    );
   };
 
   const handleToggleTaskStatus = async (taskId: string) => {
@@ -189,6 +214,27 @@ export default function Home() {
     setStatusFilter('all');
     setPriorityFilter('all');
     setCategoryFilter('all');
+  };
+
+  const showConfirmation = (
+    title: string,
+    description: string,
+    onConfirm: () => void,
+    confirmText?: string,
+    variant?: 'default' | 'destructive'
+  ) => {
+    setConfirmationDialog({
+      isOpen: true,
+      title,
+      description,
+      confirmText,
+      variant,
+      onConfirm,
+    });
+  };
+
+  const closeConfirmation = () => {
+    setConfirmationDialog(prev => ({ ...prev, isOpen: false }));
   };
 
   const handleTaskSelection = (taskId: string, isSelected: boolean) => {
@@ -210,24 +256,29 @@ export default function Home() {
   const handleBulkDelete = async () => {
     if (selectedTaskIds.length === 0) return;
 
-    if (
-      window.confirm(
-        `Are you sure you want to delete ${selectedTaskIds.length} task(s)?`
-      )
-    ) {
-      try {
-        for (const taskId of selectedTaskIds) {
-          await deleteTask(taskId);
+    const count = selectedTaskIds.length;
+    const taskText = count === 1 ? 'task' : 'tasks';
+
+    showConfirmation(
+      'Delete Tasks',
+      `Are you sure you want to delete ${count} ${taskText}? This action cannot be undone.`,
+      async () => {
+        try {
+          for (const taskId of selectedTaskIds) {
+            await deleteTask(taskId);
+          }
+          toast.success(
+            `${selectedTaskIds.length} task(s) deleted successfully!`
+          );
+          setSelectedTaskIds([]);
+        } catch (error) {
+          toast.error('Failed to delete some tasks');
+          console.error('Error in bulk delete:', error);
         }
-        toast.success(
-          `${selectedTaskIds.length} task(s) deleted successfully!`
-        );
-        setSelectedTaskIds([]);
-      } catch (error) {
-        toast.error('Failed to delete some tasks');
-        console.error('Error in bulk delete:', error);
-      }
-    }
+      },
+      `Delete ${count} ${taskText}`,
+      'destructive'
+    );
   };
 
   const handleBulkStatusChange = async (
@@ -322,6 +373,16 @@ export default function Home() {
         task={editingTask}
         onEditTask={handleUpdateTask}
         isLoading={isLoading}
+      />
+
+      <ConfirmationDialog
+        isOpen={confirmationDialog.isOpen}
+        onOpenChange={closeConfirmation}
+        title={confirmationDialog.title}
+        description={confirmationDialog.description}
+        confirmText={confirmationDialog.confirmText}
+        variant={confirmationDialog.variant}
+        onConfirm={confirmationDialog.onConfirm}
       />
     </div>
   );
