@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Filter, Plus } from 'lucide-react';
+import KeyboardShortcutsHelp from './keyboard-shortcuts-help';
 
 interface DashboardHeaderProps {
   onCreateTask: () => void;
   onFilter: () => void;
   onCreateSampleData?: () => void;
   showSampleData?: boolean;
-  showFilters?: boolean;
 }
 
 const DashboardHeader = ({
@@ -14,7 +14,6 @@ const DashboardHeader = ({
   onFilter,
   onCreateSampleData,
   showSampleData = false,
-  showFilters = true,
 }: DashboardHeaderProps) => {
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -37,9 +36,9 @@ const DashboardHeader = ({
               </Button>
             )}
             <Button variant="outline" size="sm" onClick={onFilter}>
-              <Filter className="h-4 w-4 mr-2" />
-              {showFilters ? 'Hide Filters' : 'Show Filters'}
+              <Filter className="h-4 w-4" />
             </Button>
+            <KeyboardShortcutsHelp />
             <Button onClick={onCreateTask}>
               <Plus className="h-4 w-4 mr-2" />
               Create Task
