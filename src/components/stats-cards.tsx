@@ -35,15 +35,17 @@ const StatsCards = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {stats.map(stat => (
         <div
           key={stat.title}
-          className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm"
+          className="rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:p-4"
         >
-          <div className="text-2xl font-bold">{stat.value}</div>
-          <p className="text-sm text-muted-foreground">{stat.title}</p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <div className="text-xl font-bold sm:text-2xl">{stat.value}</div>
+          <p className="text-xs text-muted-foreground sm:text-sm">
+            {stat.title}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
             {stat.description}
           </p>
         </div>

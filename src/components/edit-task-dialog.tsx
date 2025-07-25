@@ -36,9 +36,9 @@ const EditTaskDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl mx-2 sm:mx-auto w-auto sm:w-full max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Task</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">Edit Task</DialogTitle>
         </DialogHeader>
         <TaskForm
           initialData={{

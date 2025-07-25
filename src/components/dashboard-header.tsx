@@ -25,25 +25,37 @@ const DashboardHeader = ({
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="text-center lg:text-left">
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
               Task Management Dashboard
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground sm:text-sm">
               Organize and track your tasks efficiently
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 lg:justify-end">
             {showSampleData && onCreateSampleData && (
-              <Button variant="outline" size="sm" onClick={onCreateSampleData}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onCreateSampleData}
+                className="flex-1 sm:flex-none"
+              >
                 <Plus className="h-4 w-4 mr-2" />
-                Sample Data
+                <span className="hidden sm:inline">Sample Data</span>
+                <span className="sm:hidden">Sample</span>
               </Button>
             )}
-            <Button variant="outline" size="sm" onClick={onFilter}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onFilter}
+              className="flex-1 sm:flex-none"
+            >
               <Filter className="h-4 w-4" />
+              <span className="ml-1 hidden sm:inline">Filters</span>
             </Button>
             <DataExportImportDialog
               tasks={tasks}
@@ -51,9 +63,10 @@ const DashboardHeader = ({
             />
             <ThemeToggle />
             <KeyboardShortcutsHelp />
-            <Button onClick={onCreateTask}>
+            <Button onClick={onCreateTask} className="flex-1 sm:flex-none">
               <Plus className="h-4 w-4 mr-2" />
-              Create Task
+              <span className="hidden xs:inline">Create Task</span>
+              <span className="xs:hidden">Create</span>
             </Button>
           </div>
         </div>

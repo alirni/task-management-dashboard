@@ -97,15 +97,12 @@ const TaskForm = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold">
-          {initialData ? 'Edit Task' : 'Create New Task'}
-        </h2>
-      </div>
-
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="space-y-4 sm:space-y-6">
+      <form
+        onSubmit={handleSubmit(handleFormSubmit)}
+        className="space-y-3 sm:space-y-4"
+      >
+        <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="title">Title *</Label>
             <Input
@@ -215,11 +212,20 @@ const TaskForm = ({
           )}
         </div>
 
-        <div className="flex justify-end space-x-2 pt-4">
-          <Button type="button" variant="outline" onClick={onCancel}>
+        <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2 pt-3 sm:pt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="w-full sm:w-auto order-2 sm:order-1"
+          >
             Cancel
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full sm:w-auto order-1 sm:order-2"
+          >
             {isLoading
               ? 'Saving...'
               : initialData

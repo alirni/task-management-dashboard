@@ -30,9 +30,11 @@ const CreateTaskDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl mx-2 sm:mx-auto w-auto sm:w-full max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Task</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">
+            Create New Task
+          </DialogTitle>
         </DialogHeader>
         <TaskForm
           onSubmit={handleSubmit}

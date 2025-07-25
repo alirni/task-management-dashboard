@@ -50,97 +50,116 @@ const TaskCard = ({
         isSelected ? 'ring-2 ring-primary' : ''
       }`}
     >
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start gap-3">
+      <CardHeader className="pb-2 sm:pb-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-start gap-2 sm:gap-3 min-w-0 flex-1">
             {onSelect && (
               <Checkbox
                 checked={isSelected}
                 onCheckedChange={(checked: boolean) =>
                   onSelect(task.id, checked === true)
                 }
-                className="mt-1"
+                className="mt-1 flex-shrink-0"
               />
             )}
-            <CardTitle className="text-lg font-semibold line-clamp-2">
+            <CardTitle className="text-sm sm:text-lg font-semibold line-clamp-2 min-w-0">
               {task.title}
             </CardTitle>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-0.5 sm:gap-1 flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onEdit(task)}
-              className="h-8 w-8 p-0"
+              className="h-6 w-6 sm:h-8 sm:w-8 p-0"
               title="Edit task"
             >
-              <Edit className="h-4 w-4" />
+              <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
             {onDuplicate && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onDuplicate(task)}
-                className="h-8 w-8 p-0"
+                className="h-6 w-6 sm:h-8 sm:w-8 p-0"
                 title="Duplicate task"
               >
-                <Copy className="h-4 w-4" />
+                <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             )}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onDelete(task.id)}
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+              className="h-6 w-6 sm:h-8 sm:w-8 p-0 text-destructive hover:text-destructive"
               title="Delete task"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="pb-3">
-        <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
+      <CardContent className="pb-2 sm:pb-3">
+        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 mb-2 sm:mb-3">
           {task.description}
         </p>
 
-        <div className="flex flex-wrap gap-2 mb-3">
-          <Badge variant="secondary" className={PRIORITY_COLORS[task.priority]}>
+        <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-3">
+          <Badge
+            variant="secondary"
+            className={`text-xs ${PRIORITY_COLORS[task.priority]}`}
+          >
             {TASK_PRIORITIES[task.priority]}
           </Badge>
-          <Badge variant="outline" className={STATUS_COLORS[task.status]}>
+          <Badge
+            variant="outline"
+            className={`text-xs ${STATUS_COLORS[task.status]}`}
+          >
             {TASK_STATUSES[task.status]}
           </Badge>
-          {task.category && <Badge variant="outline">{task.category}</Badge>}
+          {task.category && (
+            <Badge variant="outline" className="text-xs">
+              {task.category}
+            </Badge>
+          )}
         </div>
 
-        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 sm:gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            <span>{formatDate(task.dueDate)}</span>
+            <span className="text-xs">{formatDate(task.dueDate)}</span>
           </div>
           {task.estimatedTime && (
             <div className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              <span>{task.estimatedTime}m</span>
+              <span className="text-xs">{task.estimatedTime}m</span>
             </div>
           )}
         </div>
       </CardContent>
 
-      <CardFooter className="pt-3">
+      <CardFooter className="pt-2 sm:pt-3">
         <Button
           variant={task.status === 'done' ? 'secondary' : 'default'}
           size="sm"
           onClick={() => onToggleStatus(task.id)}
-          className="w-full"
+          className="w-full text-xs sm:text-sm h-7 sm:h-9"
         >
-          {task.status === 'done'
-            ? 'Mark Incomplete'
-            : task.status === 'in-progress'
-              ? 'Mark Complete'
-              : 'Mark In Progress'}
+          <span className="block sm:hidden">
+            {task.status === 'done'
+              ? 'Complete'
+              : task.status === 'in-progress'
+                ? 'Done'
+                : 'Start'}
+          </span>
+          <span className="hidden sm:block">
+            {task.status === 'done'
+              ? 'Mark Incomplete'
+              : task.status === 'in-progress'
+                ? 'Mark Complete'
+                : 'Mark In Progress'}
+          </span>
         </Button>
       </CardFooter>
     </Card>

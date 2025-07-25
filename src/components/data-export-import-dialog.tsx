@@ -160,44 +160,53 @@ const DataExportImportDialog = ({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md mx-2 sm:mx-auto w-auto sm:w-full max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Data Export/Import</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-lg sm:text-xl">
+            Data Export/Import
+          </DialogTitle>
+          <DialogDescription className="text-sm">
             Export your tasks to JSON or import tasks from a file.
           </DialogDescription>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-2 mb-3 sm:mb-4">
             <TabsTrigger value="export">Export</TabsTrigger>
             <TabsTrigger value="import">Import</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="export" className="space-y-4">
+          <TabsContent value="export" className="space-y-3 sm:space-y-4">
             <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Export all your tasks to a JSON file for backup or sharing.
               </p>
-              <div className="p-3 bg-muted rounded-lg">
-                <p className="text-sm font-medium">Export Information:</p>
-                <p className="text-sm text-muted-foreground">
+              <div className="p-2 sm:p-3 bg-muted rounded-lg">
+                <p className="text-xs sm:text-sm font-medium">
+                  Export Information:
+                </p>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Total tasks: {tasks.length}
                 </p>
-                <p className="text-sm text-muted-foreground">Format: JSON</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Format: JSON
+                </p>
               </div>
             </div>
             <Button
               onClick={handleExport}
-              className="w-full"
+              className="w-full text-sm"
               disabled={tasks.length === 0}
             >
-              <Download className="h-4 w-4 mr-2" />
-              Export Tasks ({tasks.length})
+              <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+              <span className="hidden xs:inline">
+                Export Tasks ({tasks.length})
+              </span>
+              <span className="xs:hidden">Export ({tasks.length})</span>
             </Button>
           </TabsContent>
 
-          <TabsContent value="import" className="space-y-4">
+          <TabsContent value="import" className="space-y-3 sm:space-y-4">
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="import-file">Select JSON file to import</Label>

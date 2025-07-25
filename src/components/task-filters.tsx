@@ -45,9 +45,9 @@ const TaskFilters = ({
     categoryFilter !== 'all';
 
   return (
-    <div className="space-y-4 rounded-lg border bg-card p-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium">Filters & Search</h3>
+    <div className="space-y-4 rounded-lg border bg-card p-3 sm:p-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h3 className="text-base font-medium sm:text-lg">Filters & Search</h3>
         {hasActiveFilters && (
           <Button variant="outline" size="sm" onClick={onClearFilters}>
             Clear Filters
@@ -55,9 +55,9 @@ const TaskFilters = ({
         )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {/* Search */}
-        <div className="relative xl:col-span-2">
+        <div className="relative sm:col-span-2 xl:col-span-2">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             ref={searchInputRef}
