@@ -11,15 +11,27 @@ import CreateTaskDialog from '@/components/create-task-dialog';
 import EditTaskDialog from '@/components/edit-task-dialog';
 import ConfirmationDialog from '@/components/confirmation-dialog';
 import { Task, TaskFormData } from '@/types/task';
-import { useTasks } from '@/hooks/useTasks';
+import { useTaskContext } from '@/contexts/TaskContext';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 export default function Home() {
+  // Get task context
+  const {
+    state: { tasks, selectedTaskIds, isLoading },
+    addTask,
+    updateTask,
+    deleteTask,
+    toggleTaskStatus,
+    selectTask,
+    selectAllTasks,
+    clearSelection,
+    bulkDeleteTasks,
+  } = useTaskContext();
+
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showFilters, setShowFilters] = useState(true);
-  const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
   const [isMac, setIsMac] = useState(false);
 
   // Ref for search input to focus with keyboard shortcut
@@ -54,16 +66,23 @@ export default function Home() {
     'dueDate'
   );
 
-  // Use the useTasks hook for task management
-  const {
-    tasks,
-    isLoading,
-    addTask,
-    updateTask,
-    deleteTask,
-    toggleTaskStatus,
-    getSortedTasks,
-  } = useTasks();
+  // Helper function to get sorted tasks (replaces getSortedTasks from useTasks)
+  const getSortedTasks = (tasks: Task[]) => {
+    return [...tasks].sort((a, b) => {
+      switch (sortBy) {
+        case 'priority':
+          const priorityOrder = { high: 3, medium: 2, low: 1 };
+          return priorityOrder[b.priority] - priorityOrder[a.priority];
+        case 'dueDate':
+          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        case 'status':
+          const statusOrder = { todo: 1, 'in-progress': 2, done: 3 };
+          return statusOrder[a.status] - statusOrder[b.status];
+        default:
+          return 0;
+      }
+    });
+  };
 
   // Create sample tasks if none exist (for demo purposes)
   const createSampleTasks = async () => {
@@ -123,10 +142,10 @@ export default function Home() {
   };
 
   // Get sorted tasks (default by due date)
-  const sortedTasks = getSortedTasks(sortBy);
+  const sortedTasks = getSortedTasks(tasks);
 
   // Apply filters and search
-  const filteredTasks = sortedTasks.filter(task => {
+  const filteredTasks = sortedTasks.filter((task: Task) => {
     // Search filter
     const matchesSearch =
       searchQuery === '' ||
@@ -150,10 +169,13 @@ export default function Home() {
 
   // Stats calculations
   const totalTasks = tasks.length;
-  const inProgress = tasks.filter(task => task.status === 'in-progress').length;
-  const completed = tasks.filter(task => task.status === 'done').length;
+  const inProgress = tasks.filter(
+    (task: Task) => task.status === 'in-progress'
+  ).length;
+  const completed = tasks.filter((task: Task) => task.status === 'done').length;
   const overdue = tasks.filter(
-    task => task.status !== 'done' && new Date(task.dueDate) < new Date()
+    (task: Task) =>
+      task.status !== 'done' && new Date(task.dueDate) < new Date()
   ).length;
 
   // Event handlers
@@ -269,18 +291,14 @@ export default function Home() {
   };
 
   const handleTaskSelection = (taskId: string, isSelected: boolean) => {
-    if (isSelected) {
-      setSelectedTaskIds(prev => [...prev, taskId]);
-    } else {
-      setSelectedTaskIds(prev => prev.filter(id => id !== taskId));
-    }
+    selectTask(taskId, isSelected);
   };
 
   const handleSelectAll = (isSelected: boolean) => {
     if (isSelected) {
-      setSelectedTaskIds(filteredTasks.map(task => task.id));
+      selectAllTasks(true);
     } else {
-      setSelectedTaskIds([]);
+      selectAllTasks(false);
     }
   };
 
@@ -295,13 +313,11 @@ export default function Home() {
       `Are you sure you want to delete ${count} ${taskText}? This action cannot be undone.`,
       async () => {
         try {
-          for (const taskId of selectedTaskIds) {
-            await deleteTask(taskId);
-          }
+          bulkDeleteTasks(selectedTaskIds);
           toast.success(
             `${selectedTaskIds.length} task(s) deleted successfully!`
           );
-          setSelectedTaskIds([]);
+          clearSelection();
         } catch (error) {
           toast.error('Failed to delete some tasks');
           console.error('Error in bulk delete:', error);
@@ -325,7 +341,7 @@ export default function Home() {
         }
       }
       toast.success(`${selectedTaskIds.length} task(s) status updated!`);
-      setSelectedTaskIds([]);
+      clearSelection();
     } catch (error) {
       toast.error('Failed to update some tasks');
       console.error('Error in bulk status change:', error);
@@ -407,7 +423,7 @@ export default function Home() {
     {
       key: 'Escape',
       action: () => {
-        setSelectedTaskIds([]);
+        clearSelection();
         closeConfirmation();
       },
       description: 'Clear selections and close dialogs',

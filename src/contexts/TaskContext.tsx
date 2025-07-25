@@ -5,6 +5,7 @@ import React, {
   useContext,
   useReducer,
   useCallback,
+  useEffect,
 } from 'react';
 import { Task, TaskFormData } from '@/types/task';
 import { TaskState, initialTaskState } from '@/types/task-actions';
@@ -58,7 +59,7 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({
     tasks: initialTasks,
   });
 
-  // Task operations
+  // Task operations - defined before early return
   const addTask = useCallback((taskData: TaskFormData) => {
     const newTask = createTaskFromFormData(taskData);
     dispatch({ type: 'ADD_TASK', payload: newTask });
@@ -143,6 +144,32 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({
     setLoading,
     setError,
   };
+
+  // Ensure hydration safety
+  useEffect(() => {
+    // Load initial tasks from localStorage on client side only
+    const savedTasks = localStorage.getItem('task-management-tasks');
+    if (savedTasks) {
+      try {
+        const parsedTasks = JSON.parse(savedTasks);
+        if (Array.isArray(parsedTasks) && parsedTasks.length > 0) {
+          dispatch({ type: 'SET_TASKS', payload: parsedTasks });
+        }
+      } catch (error) {
+        console.error('Failed to load tasks from localStorage:', error);
+      }
+    }
+  }, []);
+
+  // Save tasks to localStorage whenever they change
+  useEffect(() => {
+    if (state.tasks.length > 0) {
+      localStorage.setItem(
+        'task-management-tasks',
+        JSON.stringify(state.tasks)
+      );
+    }
+  }, [state.tasks]);
 
   return (
     <TaskContext.Provider value={contextValue}>{children}</TaskContext.Provider>
