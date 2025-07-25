@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import DashboardHeader from '@/components/dashboard-header';
 import StatsCards from '@/components/stats-cards';
 import TaskDashboard from '@/components/task-dashboard';
+import TaskFilters from '@/components/task-filters';
 import CreateTaskDialog from '@/components/create-task-dialog';
 import EditTaskDialog from '@/components/edit-task-dialog';
 import { Task, TaskFormData } from '@/types/task';
@@ -14,6 +15,16 @@ export default function Home() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [showFilters, setShowFilters] = useState(true);
+
+  // Filter and Sort State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'priority' | 'dueDate' | 'status'>(
+    'dueDate'
+  );
 
   // Use the useTasks hook for task management
   const {
@@ -84,7 +95,30 @@ export default function Home() {
   };
 
   // Get sorted tasks (default by due date)
-  const sortedTasks = getSortedTasks('dueDate');
+  const sortedTasks = getSortedTasks(sortBy);
+
+  // Apply filters and search
+  const filteredTasks = sortedTasks.filter(task => {
+    // Search filter
+    const matchesSearch =
+      searchQuery === '' ||
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      task.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Status filter
+    const matchesStatus =
+      statusFilter === 'all' || task.status === statusFilter;
+
+    // Priority filter
+    const matchesPriority =
+      priorityFilter === 'all' || task.priority === priorityFilter;
+
+    // Category filter
+    const matchesCategory =
+      categoryFilter === 'all' || task.category === categoryFilter;
+
+    return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
+  });
 
   // Stats calculations
   const totalTasks = tasks.length;
@@ -148,12 +182,15 @@ export default function Home() {
     }
   };
 
-  const handleFilter = () => {
-    console.log('Filter clicked');
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setStatusFilter('all');
+    setPriorityFilter('all');
+    setCategoryFilter('all');
   };
 
-  const handleSort = () => {
-    console.log('Sort clicked');
+  const handleFilter = () => {
+    setShowFilters(!showFilters);
   };
 
   return (
@@ -161,9 +198,9 @@ export default function Home() {
       <DashboardHeader
         onCreateTask={() => setIsCreateDialogOpen(true)}
         onFilter={handleFilter}
-        onSort={handleSort}
         onCreateSampleData={createSampleTasks}
         showSampleData={tasks.length === 0}
+        showFilters={showFilters}
       />
 
       <main className="container mx-auto px-4 py-6">
@@ -175,8 +212,24 @@ export default function Home() {
             overdue={overdue}
           />
 
+          {showFilters && (
+            <TaskFilters
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              priorityFilter={priorityFilter}
+              onPriorityFilterChange={setPriorityFilter}
+              categoryFilter={categoryFilter}
+              onCategoryFilterChange={setCategoryFilter}
+              sortBy={sortBy}
+              onSortByChange={setSortBy}
+              onClearFilters={handleClearFilters}
+            />
+          )}
+
           <TaskDashboard
-            tasks={sortedTasks}
+            tasks={filteredTasks}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
             onToggleTaskStatus={handleToggleTaskStatus}

@@ -1,20 +1,20 @@
 import { Button } from '@/components/ui/button';
-import { Filter, SortAsc, Plus } from 'lucide-react';
+import { Filter, Plus } from 'lucide-react';
 
 interface DashboardHeaderProps {
   onCreateTask: () => void;
   onFilter: () => void;
-  onSort: () => void;
   onCreateSampleData?: () => void;
   showSampleData?: boolean;
+  showFilters?: boolean;
 }
 
 const DashboardHeader = ({
   onCreateTask,
   onFilter,
-  onSort,
   onCreateSampleData,
   showSampleData = false,
+  showFilters = true,
 }: DashboardHeaderProps) => {
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -38,11 +38,7 @@ const DashboardHeader = ({
             )}
             <Button variant="outline" size="sm" onClick={onFilter}>
               <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
-            <Button variant="outline" size="sm" onClick={onSort}>
-              <SortAsc className="h-4 w-4 mr-2" />
-              Sort
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
             </Button>
             <Button onClick={onCreateTask}>
               <Plus className="h-4 w-4 mr-2" />
