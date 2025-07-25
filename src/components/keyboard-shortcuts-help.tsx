@@ -14,17 +14,24 @@ interface KeyboardShortcutsHelpProps {
 }
 
 const KeyboardShortcutsHelp = ({ children }: KeyboardShortcutsHelpProps) => {
+  // Detect if user is on Mac
+  const isMac =
+    typeof window !== 'undefined' &&
+    navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+
+  const modifierKey = isMac ? 'Cmd' : 'Ctrl';
+
   const shortcuts = [
     {
-      keys: `Ctrl + Alt + N`,
+      keys: `${modifierKey} + N`,
       description: 'Create new task',
     },
     {
-      keys: `Ctrl + Alt + A`,
+      keys: `${modifierKey} + A`,
       description: 'Select all tasks',
     },
     {
-      keys: `Ctrl + Alt + D`,
+      keys: `${modifierKey} + D`,
       description: 'Duplicate selected task (when one is selected)',
     },
     {
@@ -32,7 +39,7 @@ const KeyboardShortcutsHelp = ({ children }: KeyboardShortcutsHelpProps) => {
       description: 'Delete selected tasks',
     },
     {
-      keys: `Ctrl + Alt + F`,
+      keys: `${modifierKey} + F`,
       description: 'Focus search box',
     },
     {

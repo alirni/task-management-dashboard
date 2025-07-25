@@ -331,29 +331,39 @@ export default function Home() {
   };
 
   // Keyboard shortcuts setup
+  const isMac =
+    typeof window !== 'undefined' &&
+    navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+
   const shortcuts = [
     {
       key: 'n',
-      ctrlKey: true,
-      metaKey: true,
+      ctrlKey: !isMac,
+      metaKey: isMac,
       action: () => setIsCreateDialogOpen(true),
       description: 'Create new task',
     },
     {
       key: 'a',
-      ctrlKey: true,
-      metaKey: true,
+      ctrlKey: !isMac,
+      metaKey: isMac,
       action: () => handleSelectAll(true),
       description: 'Select all tasks',
     },
     {
       key: 'd',
-      ctrlKey: true,
-      metaKey: true,
+      ctrlKey: !isMac,
+      metaKey: isMac,
       action: () => {
         if (selectedTaskIds.length === 1) {
           const task = tasks.find(t => t.id === selectedTaskIds[0]);
-          if (task) handleDuplicateTask(task);
+          if (task) {
+            handleDuplicateTask(task);
+          }
+        } else if (selectedTaskIds.length === 0) {
+          toast.error('Please select a task to duplicate');
+        } else {
+          toast.error('Please select only one task to duplicate');
         }
       },
       description: 'Duplicate selected task',
@@ -369,8 +379,8 @@ export default function Home() {
     },
     {
       key: 'f',
-      ctrlKey: true,
-      metaKey: true,
+      ctrlKey: !isMac,
+      metaKey: isMac,
       action: () => {
         if (searchInputRef.current) {
           searchInputRef.current.focus();
