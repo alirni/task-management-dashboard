@@ -6,6 +6,7 @@ interface TaskListProps {
   onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: string) => void;
   onToggleTaskStatus: (taskId: string) => void;
+  onDuplicateTask?: (task: Task) => void;
   onTaskSelection?: (taskId: string, isSelected: boolean) => void;
   selectedTaskIds?: string[];
 }
@@ -15,6 +16,7 @@ const TaskList = ({
   onEditTask,
   onDeleteTask,
   onToggleTaskStatus,
+  onDuplicateTask,
   onTaskSelection,
   selectedTaskIds = [],
 }: TaskListProps) => {
@@ -38,6 +40,7 @@ const TaskList = ({
           onEdit={onEditTask}
           onDelete={onDeleteTask}
           onToggleStatus={onToggleTaskStatus}
+          onDuplicate={onDuplicateTask}
           onSelect={onTaskSelection}
           isSelected={selectedTaskIds.includes(task.id)}
         />

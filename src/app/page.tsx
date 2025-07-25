@@ -163,6 +163,27 @@ export default function Home() {
     setIsEditDialogOpen(true);
   };
 
+  const handleDuplicateTask = async (task: Task) => {
+    try {
+      const duplicatedTaskData: TaskFormData = {
+        title: `${task.title} (Copy)`,
+        description: task.description,
+        priority: task.priority,
+        status: 'todo', // Reset status to todo for new duplicate
+        category: task.category,
+        tags: [...task.tags], // Copy the tags array
+        dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Set due date to tomorrow
+        estimatedTime: task.estimatedTime,
+      };
+
+      await addTask(duplicatedTaskData);
+      toast.success('Task duplicated successfully!');
+    } catch (error) {
+      toast.error('Failed to duplicate task');
+      console.error('Error duplicating task:', error);
+    }
+  };
+
   const handleUpdateTask = async (
     taskId: string,
     data: Partial<TaskFormData>
@@ -353,6 +374,7 @@ export default function Home() {
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
             onToggleTaskStatus={handleToggleTaskStatus}
+            onDuplicateTask={handleDuplicateTask}
             onTaskSelection={handleTaskSelection}
             selectedTaskIds={selectedTaskIds}
             isLoading={isLoading}

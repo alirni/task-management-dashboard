@@ -15,13 +15,14 @@ import {
   TASK_PRIORITIES,
   TASK_STATUSES,
 } from '@/constants';
-import { Calendar, Edit, Trash2, Clock } from 'lucide-react';
+import { Calendar, Edit, Trash2, Clock, Copy } from 'lucide-react';
 
 interface TaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
   onDelete: (taskId: string) => void;
   onToggleStatus: (taskId: string) => void;
+  onDuplicate?: (task: Task) => void;
   onSelect?: (taskId: string, isSelected: boolean) => void;
   isSelected?: boolean;
 }
@@ -31,6 +32,7 @@ const TaskCard = ({
   onEdit,
   onDelete,
   onToggleStatus,
+  onDuplicate,
   onSelect,
   isSelected = false,
 }: TaskCardProps) => {
@@ -70,14 +72,27 @@ const TaskCard = ({
               size="sm"
               onClick={() => onEdit(task)}
               className="h-8 w-8 p-0"
+              title="Edit task"
             >
               <Edit className="h-4 w-4" />
             </Button>
+            {onDuplicate && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDuplicate(task)}
+                className="h-8 w-8 p-0"
+                title="Duplicate task"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onDelete(task.id)}
               className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+              title="Delete task"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
