@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   PRIORITY_COLORS,
   STATUS_COLORS,
@@ -21,6 +22,8 @@ interface TaskCardProps {
   onEdit: (task: Task) => void;
   onDelete: (taskId: string) => void;
   onToggleStatus: (taskId: string) => void;
+  onSelect?: (taskId: string, isSelected: boolean) => void;
+  isSelected?: boolean;
 }
 
 const TaskCard = ({
@@ -28,6 +31,8 @@ const TaskCard = ({
   onEdit,
   onDelete,
   onToggleStatus,
+  onSelect,
+  isSelected = false,
 }: TaskCardProps) => {
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -38,12 +43,27 @@ const TaskCard = ({
   };
 
   return (
-    <Card className="transition-shadow hover:shadow-md">
+    <Card
+      className={`transition-shadow hover:shadow-md ${
+        isSelected ? 'ring-2 ring-primary' : ''
+      }`}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
-          <CardTitle className="text-lg font-semibold line-clamp-2">
-            {task.title}
-          </CardTitle>
+          <div className="flex items-start gap-3">
+            {onSelect && (
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={(checked: boolean) =>
+                  onSelect(task.id, checked === true)
+                }
+                className="mt-1"
+              />
+            )}
+            <CardTitle className="text-lg font-semibold line-clamp-2">
+              {task.title}
+            </CardTitle>
+          </div>
           <div className="flex gap-1">
             <Button
               variant="ghost"
@@ -101,7 +121,11 @@ const TaskCard = ({
           onClick={() => onToggleStatus(task.id)}
           className="w-full"
         >
-          {task.status === 'done' ? 'Mark Incomplete' : 'Mark Complete'}
+          {task.status === 'done'
+            ? 'Mark Incomplete'
+            : task.status === 'in-progress'
+              ? 'Mark Complete'
+              : 'Mark In Progress'}
         </Button>
       </CardFooter>
     </Card>

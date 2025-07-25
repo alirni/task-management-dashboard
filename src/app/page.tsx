@@ -6,6 +6,7 @@ import DashboardHeader from '@/components/dashboard-header';
 import StatsCards from '@/components/stats-cards';
 import TaskDashboard from '@/components/task-dashboard';
 import TaskFilters from '@/components/task-filters';
+import BulkActionsToolbar from '@/components/bulk-actions-toolbar';
 import CreateTaskDialog from '@/components/create-task-dialog';
 import EditTaskDialog from '@/components/edit-task-dialog';
 import { Task, TaskFormData } from '@/types/task';
@@ -16,6 +17,7 @@ export default function Home() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showFilters, setShowFilters] = useState(true);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
 
   // Filter and Sort State
   const [searchQuery, setSearchQuery] = useState('');
@@ -189,6 +191,65 @@ export default function Home() {
     setCategoryFilter('all');
   };
 
+  const handleTaskSelection = (taskId: string, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedTaskIds(prev => [...prev, taskId]);
+    } else {
+      setSelectedTaskIds(prev => prev.filter(id => id !== taskId));
+    }
+  };
+
+  const handleSelectAll = (isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedTaskIds(filteredTasks.map(task => task.id));
+    } else {
+      setSelectedTaskIds([]);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedTaskIds.length === 0) return;
+
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${selectedTaskIds.length} task(s)?`
+      )
+    ) {
+      try {
+        for (const taskId of selectedTaskIds) {
+          await deleteTask(taskId);
+        }
+        toast.success(
+          `${selectedTaskIds.length} task(s) deleted successfully!`
+        );
+        setSelectedTaskIds([]);
+      } catch (error) {
+        toast.error('Failed to delete some tasks');
+        console.error('Error in bulk delete:', error);
+      }
+    }
+  };
+
+  const handleBulkStatusChange = async (
+    newStatus: 'todo' | 'in-progress' | 'done'
+  ) => {
+    if (selectedTaskIds.length === 0) return;
+
+    try {
+      for (const taskId of selectedTaskIds) {
+        const task = tasks.find(t => t.id === taskId);
+        if (task && task.status !== newStatus) {
+          await updateTask(taskId, { status: newStatus });
+        }
+      }
+      toast.success(`${selectedTaskIds.length} task(s) status updated!`);
+      setSelectedTaskIds([]);
+    } catch (error) {
+      toast.error('Failed to update some tasks');
+      console.error('Error in bulk status change:', error);
+    }
+  };
+
   const handleFilter = () => {
     setShowFilters(!showFilters);
   };
@@ -228,11 +289,21 @@ export default function Home() {
             />
           )}
 
+          <BulkActionsToolbar
+            selectedCount={selectedTaskIds.length}
+            totalCount={filteredTasks.length}
+            onSelectAll={handleSelectAll}
+            onBulkDelete={handleBulkDelete}
+            onBulkStatusChange={handleBulkStatusChange}
+          />
+
           <TaskDashboard
             tasks={filteredTasks}
             onEditTask={handleEditTask}
             onDeleteTask={handleDeleteTask}
             onToggleTaskStatus={handleToggleTaskStatus}
+            onTaskSelection={handleTaskSelection}
+            selectedTaskIds={selectedTaskIds}
             isLoading={isLoading}
           />
         </div>

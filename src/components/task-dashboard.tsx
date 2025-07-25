@@ -6,6 +6,8 @@ interface TaskDashboardProps {
   onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: string) => void;
   onToggleTaskStatus: (taskId: string) => void;
+  onTaskSelection?: (taskId: string, isSelected: boolean) => void;
+  selectedTaskIds?: string[];
   isLoading?: boolean;
 }
 
@@ -14,6 +16,8 @@ const TaskDashboard = ({
   onEditTask,
   onDeleteTask,
   onToggleTaskStatus,
+  onTaskSelection,
+  selectedTaskIds,
   isLoading,
 }: TaskDashboardProps) => {
   return (
@@ -38,6 +42,8 @@ const TaskDashboard = ({
           onEditTask={onEditTask}
           onDeleteTask={onDeleteTask}
           onToggleTaskStatus={onToggleTaskStatus}
+          onTaskSelection={onTaskSelection}
+          selectedTaskIds={selectedTaskIds}
         />
       )}
     </div>
