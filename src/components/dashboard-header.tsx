@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Filter, Plus } from 'lucide-react';
 import KeyboardShortcutsHelp from './keyboard-shortcuts-help';
 import DataExportImportDialog from './data-export-import-dialog';
+import { ThemeToggle } from './theme-toggle';
 import { Task, TaskFormData } from '@/types/task';
 
 interface DashboardHeaderProps {
@@ -48,6 +49,7 @@ const DashboardHeader = ({
               tasks={tasks}
               onImportTasks={onImportTasks}
             />
+            <ThemeToggle />
             <KeyboardShortcutsHelp />
             <Button onClick={onCreateTask}>
               <Plus className="h-4 w-4 mr-2" />
