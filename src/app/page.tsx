@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 import DashboardHeader from '@/components/dashboard-header';
 import StatsCards from '@/components/stats-cards';
@@ -12,6 +12,7 @@ import EditTaskDialog from '@/components/edit-task-dialog';
 import ConfirmationDialog from '@/components/confirmation-dialog';
 import { Task, TaskFormData } from '@/types/task';
 import { useTasks } from '@/hooks/useTasks';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 export default function Home() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -19,6 +20,9 @@ export default function Home() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showFilters, setShowFilters] = useState(true);
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
+
+  // Ref for search input to focus with keyboard shortcut
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Confirmation dialog state
   const [confirmationDialog, setConfirmationDialog] = useState<{
@@ -326,6 +330,66 @@ export default function Home() {
     setShowFilters(!showFilters);
   };
 
+  // Keyboard shortcuts setup
+  const shortcuts = [
+    {
+      key: 'n',
+      ctrlKey: true,
+      metaKey: true,
+      action: () => setIsCreateDialogOpen(true),
+      description: 'Create new task',
+    },
+    {
+      key: 'a',
+      ctrlKey: true,
+      metaKey: true,
+      action: () => handleSelectAll(true),
+      description: 'Select all tasks',
+    },
+    {
+      key: 'd',
+      ctrlKey: true,
+      metaKey: true,
+      action: () => {
+        if (selectedTaskIds.length === 1) {
+          const task = tasks.find(t => t.id === selectedTaskIds[0]);
+          if (task) handleDuplicateTask(task);
+        }
+      },
+      description: 'Duplicate selected task',
+    },
+    {
+      key: 'Delete',
+      action: () => {
+        if (selectedTaskIds.length > 0) {
+          handleBulkDelete();
+        }
+      },
+      description: 'Delete selected tasks',
+    },
+    {
+      key: 'f',
+      ctrlKey: true,
+      metaKey: true,
+      action: () => {
+        if (searchInputRef.current) {
+          searchInputRef.current.focus();
+        }
+      },
+      description: 'Focus search box',
+    },
+    {
+      key: 'Escape',
+      action: () => {
+        setSelectedTaskIds([]);
+        closeConfirmation();
+      },
+      description: 'Clear selections and close dialogs',
+    },
+  ];
+
+  useKeyboardShortcuts({ shortcuts });
+
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader
@@ -333,7 +397,6 @@ export default function Home() {
         onFilter={handleFilter}
         onCreateSampleData={createSampleTasks}
         showSampleData={tasks.length === 0}
-        showFilters={showFilters}
       />
 
       <main className="container mx-auto px-4 py-6">
@@ -358,6 +421,7 @@ export default function Home() {
               sortBy={sortBy}
               onSortByChange={setSortBy}
               onClearFilters={handleClearFilters}
+              searchInputRef={searchInputRef}
             />
           )}
 
