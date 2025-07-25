@@ -1,3 +1,4 @@
+import React from 'react';
 import TaskList from '@/components/task-list';
 import { Task } from '@/types/task';
 
@@ -53,4 +54,4 @@ const TaskDashboard = ({
   );
 };
 
-export default TaskDashboard;
+export default React.memo(TaskDashboard);

@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface StatsCardsProps {
   totalTasks: number;
   inProgress: number;
@@ -54,4 +56,4 @@ const StatsCards = ({
   );
 };
 
-export default StatsCards;
+export default React.memo(StatsCards);

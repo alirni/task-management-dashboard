@@ -1,3 +1,4 @@
+import React from 'react';
 import { Task } from '@/types/task';
 import {
   Card,
@@ -166,4 +167,4 @@ const TaskCard = ({
   );
 };
 
-export default TaskCard;
+export default React.memo(TaskCard);

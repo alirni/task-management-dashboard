@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -98,4 +99,4 @@ const BulkActionsToolbar = ({
   );
 };
 
-export default BulkActionsToolbar;
+export default React.memo(BulkActionsToolbar);

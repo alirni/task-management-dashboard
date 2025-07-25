@@ -1,3 +1,4 @@
+import React from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
@@ -124,4 +125,4 @@ const TaskFilters = ({
   );
 };
 
-export default TaskFilters;
+export default React.memo(TaskFilters);
