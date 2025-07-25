@@ -152,9 +152,11 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({
   // Ensure hydration safety
   useEffect(() => {
     setIsHydrated(true);
+  }, []);
 
-    // Load initial tasks from localStorage only after hydration
-    if (typeof window !== 'undefined') {
+  // Load initial tasks from localStorage only after hydration
+  useEffect(() => {
+    if (isHydrated && typeof window !== 'undefined') {
       const savedTasks = localStorage.getItem('task-management-tasks');
       if (savedTasks) {
         try {
@@ -167,7 +169,7 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({
         }
       }
     }
-  }, []);
+  }, [isHydrated]);
 
   // Save tasks to localStorage whenever they change (only after hydration)
   useEffect(() => {

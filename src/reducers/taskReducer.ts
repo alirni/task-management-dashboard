@@ -1,9 +1,24 @@
 import { TaskAction, TaskState } from '@/types/task-actions';
 import { Task, TaskFormData } from '@/types/task';
 
-// Helper function to generate unique IDs
+// Counter for generating unique IDs that are hydration-safe
+let idCounter = 0;
+
+// Helper function to generate unique IDs without hydration issues
 const generateId = (): string => {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  // Use a simple counter that won't cause hydration mismatches
+  return `task_${++idCounter}`;
+};
+
+// Helper function to create a safe date (only on client)
+const createSafeDate = (): Date => {
+  // For server-side rendering, return a fixed date to avoid hydration mismatches
+  // For client-side, return the actual current date
+  if (typeof window === 'undefined') {
+    // Return a fixed date for SSR to ensure consistency
+    return new Date('2025-07-25T12:00:00Z');
+  }
+  return new Date();
 };
 
 // Helper function to convert TaskFormData to Task
@@ -11,8 +26,8 @@ const createTaskFromFormData = (formData: TaskFormData): Task => {
   return {
     id: generateId(),
     ...formData,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: createSafeDate(),
+    updatedAt: createSafeDate(),
   };
 };
 
@@ -57,7 +72,11 @@ export const taskReducer = (
         ...state,
         tasks: state.tasks.map(task =>
           task.id === action.payload.id
-            ? { ...task, ...action.payload.updates, updatedAt: new Date() }
+            ? {
+                ...task,
+                ...action.payload.updates,
+                updatedAt: createSafeDate(),
+              }
             : task
         ),
         lastAction: 'UPDATE_TASK',
@@ -83,7 +102,7 @@ export const taskReducer = (
             ? {
                 ...task,
                 status: getNextStatus(task.status),
-                updatedAt: new Date(),
+                updatedAt: createSafeDate(),
               }
             : task
         ),
@@ -96,8 +115,8 @@ export const taskReducer = (
         ...action.payload,
         id: generateId(),
         title: `${action.payload.title} (Copy)`,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: createSafeDate(),
+        updatedAt: createSafeDate(),
       };
       return {
         ...state,
@@ -122,7 +141,11 @@ export const taskReducer = (
         ...state,
         tasks: state.tasks.map(task =>
           action.payload.ids.includes(task.id)
-            ? { ...task, status: action.payload.status, updatedAt: new Date() }
+            ? {
+                ...task,
+                status: action.payload.status,
+                updatedAt: createSafeDate(),
+              }
             : task
         ),
         lastAction: 'BULK_UPDATE_STATUS',

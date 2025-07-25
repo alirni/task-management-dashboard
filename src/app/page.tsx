@@ -67,7 +67,7 @@ export default function Home() {
     'dueDate'
   );
 
-  // Helper function to get sorted tasks (replaces getSortedTasks from useTasks)
+  // Use optimized hooks for task operations
   const getSortedTasks = (tasks: Task[]) => {
     return [...tasks].sort((a, b) => {
       switch (sortBy) {
@@ -85,9 +85,37 @@ export default function Home() {
     });
   };
 
+  // Get sorted and filtered tasks
+  const sortedTasks = getSortedTasks(tasks);
+  const filteredTasks = sortedTasks.filter((task: Task) => {
+    const matchesSearch =
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      task.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === 'all' || task.status === statusFilter;
+    const matchesPriority =
+      priorityFilter === 'all' || task.priority === priorityFilter;
+    const matchesCategory =
+      categoryFilter === 'all' || task.category === categoryFilter;
+
+    return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
+  });
+
+  // Calculate statistics
+  const totalTasks = tasks.length;
+  const inProgress = tasks.filter(
+    (task: Task) => task.status === 'in-progress'
+  ).length;
+  const completed = tasks.filter((task: Task) => task.status === 'done').length;
+  const overdue = tasks.filter(
+    (task: Task) =>
+      task.status !== 'done' && new Date(task.dueDate) < new Date()
+  ).length;
+
   // Create sample tasks if none exist (for demo purposes)
   const createSampleTasks = async () => {
-    const now = new Date();
+    // Use a fixed base date to avoid hydration mismatches
+    const baseDate = new Date('2025-07-25T12:00:00Z');
     const sampleTasks: TaskFormData[] = [
       {
         title: 'Complete project proposal',
@@ -96,7 +124,7 @@ export default function Home() {
         status: 'in-progress',
         category: 'Work',
         tags: ['proposal', 'client'],
-        dueDate: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
+        dueDate: new Date(baseDate.getTime() + 2 * 24 * 60 * 60 * 1000), // 2 days from base
         estimatedTime: 120,
       },
       {
@@ -106,7 +134,7 @@ export default function Home() {
         status: 'todo',
         category: 'Personal',
         tags: ['shopping', 'weekly'],
-        dueDate: new Date(now.getTime() + 24 * 60 * 60 * 1000), // Tomorrow
+        dueDate: new Date(baseDate.getTime() + 24 * 60 * 60 * 1000), // 1 day from base
         estimatedTime: 30,
       },
       {
@@ -116,7 +144,7 @@ export default function Home() {
         status: 'todo',
         category: 'Work',
         tags: ['code-review', 'development'],
-        dueDate: new Date(now.getTime() + 4 * 60 * 60 * 1000), // 4 hours from now
+        dueDate: new Date(baseDate.getTime() + 4 * 60 * 60 * 1000), // 4 hours from base
         estimatedTime: 45,
       },
       {
@@ -126,7 +154,7 @@ export default function Home() {
         status: 'done',
         category: 'Health',
         tags: ['fitness', 'daily'],
-        dueDate: new Date(now.getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
+        dueDate: new Date(baseDate.getTime() - 2 * 60 * 60 * 1000), // 2 hours before base
         estimatedTime: 60,
       },
     ];
@@ -141,43 +169,6 @@ export default function Home() {
     }
     toast.success('Sample tasks created!');
   };
-
-  // Get sorted tasks (default by due date)
-  const sortedTasks = getSortedTasks(tasks);
-
-  // Apply filters and search
-  const filteredTasks = sortedTasks.filter((task: Task) => {
-    // Search filter
-    const matchesSearch =
-      searchQuery === '' ||
-      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-    // Status filter
-    const matchesStatus =
-      statusFilter === 'all' || task.status === statusFilter;
-
-    // Priority filter
-    const matchesPriority =
-      priorityFilter === 'all' || task.priority === priorityFilter;
-
-    // Category filter
-    const matchesCategory =
-      categoryFilter === 'all' || task.category === categoryFilter;
-
-    return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
-  });
-
-  // Stats calculations
-  const totalTasks = tasks.length;
-  const inProgress = tasks.filter(
-    (task: Task) => task.status === 'in-progress'
-  ).length;
-  const completed = tasks.filter((task: Task) => task.status === 'done').length;
-  const overdue = tasks.filter(
-    (task: Task) =>
-      task.status !== 'done' && new Date(task.dueDate) < new Date()
-  ).length;
 
   // Event handlers
   const handleCreateTask = async (data: TaskFormData) => {
@@ -205,7 +196,9 @@ export default function Home() {
         status: 'todo', // Reset status to todo for new duplicate
         category: task.category,
         tags: [...task.tags], // Copy the tags array
-        dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Set due date to tomorrow
+        dueDate: new Date(
+          new Date(task.dueDate).getTime() + 24 * 60 * 60 * 1000
+        ), // Set due date to day after original
         estimatedTime: task.estimatedTime,
       };
 
