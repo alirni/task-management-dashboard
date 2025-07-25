@@ -334,20 +334,6 @@ interface HydrationSafeProps {
 </HydrationSafe>
 ```
 
-### UndoRedoButtons
-
-**Location**: `src/components/UndoRedoButtons.tsx`
-
-Control buttons for undo/redo functionality.
-
-**Props**: None (uses TaskContext)
-
-**Features**:
-- Visual feedback for available actions
-- Keyboard shortcut indicators
-- Disabled states
-- Tooltip descriptions
-
 ### ThemeToggle
 
 **Location**: `src/components/theme-toggle.tsx`

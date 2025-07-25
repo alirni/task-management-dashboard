@@ -186,8 +186,6 @@ src/
 ### Keyboard Shortcuts
 ```
 Ctrl/Cmd + N  →  Create new task
-Ctrl/Cmd + Z  →  Undo action
-Ctrl/Cmd + Y  →  Redo action
 Ctrl/Cmd + F  →  Focus search
 Escape        →  Clear selections
 ```

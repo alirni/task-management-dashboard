@@ -47,12 +47,6 @@ interface TaskContextType {
   // UI state operations
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  
-  // Undo/Redo operations
-  undo: () => void;
-  redo: () => void;
-  canUndo: boolean;
-  canRedo: boolean;
 }
 ```
 
@@ -76,11 +70,7 @@ function MyComponent() {
     state: { tasks, selectedTaskIds, isLoading },
     addTask,
     updateTask,
-    deleteTask,
-    undo,
-    redo,
-    canUndo,
-    canRedo
+    deleteTask
   } = useTaskContext();
   
   // Use the context methods...
@@ -89,62 +79,12 @@ function MyComponent() {
 
 #### Features
 - **Centralized State**: All task-related state in one place
-- **Undo/Redo**: Full history tracking for all operations
 - **Bulk Operations**: Efficient handling of multiple tasks
 - **Auto-persistence**: Automatic localStorage synchronization
 - **Hydration Safety**: SSR-safe implementation
 - **Type Safety**: Full TypeScript support
 
 ## Custom Hooks
-
-### useUndoRedo
-
-**Location**: `src/hooks/useUndoRedo.ts`
-
-Generic hook for implementing undo/redo functionality with any state type.
-
-#### Interface
-```typescript
-function useUndoRedo<T>(initialState: T): [T, UndoRedoActions<T>]
-
-interface UndoRedoActions<T> {
-  canUndo: boolean;
-  canRedo: boolean;
-  undo: () => void;
-  redo: () => void;
-  set: (newState: T) => void;
-  reset: (initialState: T) => void;
-}
-```
-
-#### Usage
-```typescript
-import { useUndoRedo } from '@/hooks/useUndoRedo';
-
-function MyComponent() {
-  const [state, { undo, redo, canUndo, canRedo, set }] = useUndoRedo({
-    count: 0,
-    items: []
-  });
-  
-  const increment = () => set({ ...state, count: state.count + 1 });
-  
-  return (
-    <div>
-      <p>Count: {state.count}</p>
-      <button onClick={increment}>+</button>
-      <button onClick={undo} disabled={!canUndo}>Undo</button>
-      <button onClick={redo} disabled={!canRedo}>Redo</button>
-    </div>
-  );
-}
-```
-
-#### Features
-- **Generic Type Support**: Works with any state type
-- **History Tracking**: Maintains past and future states
-- **Memory Efficient**: Limits history size to prevent memory leaks
-- **Type Safe**: Full TypeScript support
 
 ### useKeyboardShortcuts
 
@@ -185,10 +125,10 @@ function MyComponent() {
       description: 'Create new item'
     },
     {
-      key: 'z',
+      key: 'f',
       ctrlKey: true,
-      action: () => undo(),
-      description: 'Undo last action'
+      action: () => focusSearch(),
+      description: 'Focus search input'
     }
   ];
   
@@ -297,9 +237,10 @@ interface Task {
   category: string;
   tags: string[];
   dueDate: Date;
-  estimatedTime: number; // in minutes
   createdAt: Date;
   updatedAt: Date;
+  assignedTo?: string;
+  estimatedTime?: number; // in minutes
 }
 ```
 
@@ -313,7 +254,7 @@ interface TaskFormData {
   category: string;
   tags: string[];
   dueDate: Date;
-  estimatedTime: number;
+  estimatedTime?: number;
 }
 ```
 
@@ -481,9 +422,9 @@ const newState = taskReducer(currentState, {
 
 ### Memory Management
 
-1. **History Limits**: Undo/redo history is limited to prevent memory leaks
-2. **Event Cleanup**: All event listeners are properly cleaned up
-3. **Reference Stability**: Stable references for props to prevent re-renders
+1. **Event Cleanup**: All event listeners are properly cleaned up
+2. **Reference Stability**: Stable references for props to prevent re-renders
+3. **State Optimization**: Efficient state updates to minimize re-renders
 
 ## Error Handling
 
@@ -539,27 +480,3 @@ const handleAsyncOperation = async () => {
 - Test context providers
 - Test form submissions
 - Test keyboard shortcuts
-
-### Example Test
-```typescript
-import { renderHook, act } from '@testing-library/react';
-import { useUndoRedo } from '@/hooks/useUndoRedo';
-
-test('useUndoRedo should handle undo/redo operations', () => {
-  const { result } = renderHook(() => useUndoRedo({ count: 0 }));
-  
-  act(() => {
-    result.current[1].set({ count: 1 });
-  });
-  
-  expect(result.current[0].count).toBe(1);
-  expect(result.current[1].canUndo).toBe(true);
-  
-  act(() => {
-    result.current[1].undo();
-  });
-  
-  expect(result.current[0].count).toBe(0);
-  expect(result.current[1].canRedo).toBe(true);
-});
-```

@@ -19,8 +19,6 @@ A modern, feature-rich task management application built with **Next.js 15**, **
 - ✅ **Task Duplication**: Quickly duplicate existing tasks
 - ✅ **Data Persistence**: Auto-save to localStorage with hydration safety
 - ✅ **Import/Export**: JSON data import and export functionality
-- ✅ **Undo/Redo**: Full undo/redo functionality for all operations
-- 🚧 **Drag & Drop**: Task reordering (planned)
 
 ### Advanced Features
 - ✅ **Context API**: Centralized state management with TypeScript
@@ -90,8 +88,6 @@ A modern, feature-rich task management application built with **Next.js 15**, **
 - `Ctrl/Cmd + N` - Create new task
 - `Ctrl/Cmd + A` - Select all tasks
 - `Ctrl/Cmd + D` - Duplicate selected task
-- `Ctrl/Cmd + Z` - Undo last action
-- `Ctrl/Cmd + Y` - Redo last undone action
 - `Ctrl/Cmd + F` - Focus search box
 - `Delete` - Delete selected tasks
 - `Escape` - Clear selections and close dialogs
@@ -122,7 +118,6 @@ src/
 ├── contexts/                # React contexts
 │   └── TaskContext.tsx      # Task state management
 ├── hooks/                   # Custom React hooks
-│   ├── useUndoRedo.ts       # Undo/redo functionality
 │   ├── useKeyboardShortcuts.ts
 │   └── ...
 ├── lib/                     # Utility functions
@@ -189,7 +184,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [ ] Drag and drop task reordering
 - [ ] Task categories management
 - [ ] Advanced filtering options
-- [ ] Task templates
 - [ ] Collaboration features
 - [ ] PWA support
 - [ ] Real-time synchronization

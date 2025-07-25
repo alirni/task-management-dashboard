@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Drag and drop task reordering
 - Task categories management interface
 - Advanced search with filters
-- Task templates functionality
 - Collaboration features
 - PWA support
 - Real-time synchronization
@@ -36,12 +35,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Task Duplication**: One-click task duplication with automatic timestamp updates
 - **Data Persistence**: Automatic localStorage saving with hydration-safe implementation
 - **Import/Export System**: JSON-based data import and export with error handling
-- **Undo/Redo Functionality**: Complete history tracking for all task operations
 - **Keyboard Shortcuts**: Comprehensive keyboard navigation and shortcuts
 
 #### Advanced Features ✅
 - **Context API State Management**: Centralized state with TypeScript interfaces
-- **Custom React Hooks**: Reusable hooks for undo/redo, keyboard shortcuts, and themes
+- **Custom React Hooks**: Reusable hooks for keyboard shortcuts and themes
 - **Responsive Design**: Mobile-first responsive layout with Tailwind CSS
 - **Dark/Light Theme**: System preference detection with manual override
 - **Form Validation**: Zod schema validation with React Hook Form integration
@@ -64,7 +62,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### State Management
 - **TaskContext**: Centralized task state management with full TypeScript support
-- **UndoRedo Hook**: Generic undo/redo functionality with history tracking
 - **Local Storage**: Automatic persistence with SSR-safe hydration
 - **Error Handling**: Comprehensive error boundaries and validation
 
@@ -103,7 +100,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DashboardHeader` - Application header with navigation
 - `StatsCards` - Dashboard statistics display
 - `BulkActionsToolbar` - Multi-select action toolbar
-- `UndoRedoButtons` - Undo/redo control interface
 
 #### Dialog Components
 - `CreateTaskDialog` - Task creation modal
@@ -119,7 +115,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Hooks Developed
 
 #### State Management Hooks
-- `useUndoRedo<T>` - Generic undo/redo functionality
 - `useTaskContext` - Task state management hook
 - `useLocalStorage<T>` - localStorage with SSR safety
 
@@ -132,7 +127,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Task Management
 - **Creation**: Modal form with validation and error handling
 - **Editing**: In-place editing with optimistic updates
-- **Deletion**: Soft delete with undo capability
+- **Deletion**: Task deletion with confirmation dialog
 - **Status Toggle**: One-click status cycling with visual feedback
 - **Duplication**: Smart duplication with timestamp updates
 
@@ -160,8 +155,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Ctrl/Cmd + N` - Create new task
 - `Ctrl/Cmd + A` - Select all tasks
 - `Ctrl/Cmd + D` - Duplicate selected task
-- `Ctrl/Cmd + Z` - Undo last action
-- `Ctrl/Cmd + Y` - Redo last undone action
 - `Ctrl/Cmd + F` - Focus search box
 - `Delete` - Delete selected tasks
 - `Escape` - Clear selections and close dialogs
